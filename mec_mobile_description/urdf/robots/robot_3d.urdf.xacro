@@ -1,108 +1,131 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot_3d">
 
-    <xacro:property name="M_PI" value="3.1415926535897931" />
+  <!-- ========= 공통 상수/인자 ========= -->
+  <xacro:property name="M_PI" value="3.1415926535897931" />
 
-    <xacro:arg name="robot_name" default="robot_3d"/>
-    <xacro:arg name="prefix" default=""/>
-    <xacro:arg name="use_gazebo" default="false"/>
-
-    <xacro:include filename="$(find mec_mobile_description)/urdf/mech/robot_3d_base.urdf.xacro"/>
-    <xacro:include filename="$(find mec_mobile_description)/urdf/mech/mecanum_wheel.urdf.xacro"/>
-    <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/rgbd_camera.urdf.xacro"/>
-    <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/lidar.urdf.xacro"/>
-    <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/imu.urdf.xacro"/>
-
-    <xacro:robot_3d_base prefix="$(arg prefix)"/>
-
-    <xacro:mecanum_wheel
-      prefix="$(arg prefix)"
-      side="front_left"
-      x_reflect="1"
-      y_reflect="1"/>
-
-    <xacro:mecanum_wheel
-      prefix="$(arg prefix)"
-      side="front_right"
-      x_reflect="1"
-      y_reflect="-1"/>
-
-    <xacro:mecanum_wheel
-      prefix="$(arg prefix)"
-      side="back_left"
-      x_reflect="-1"
-      y_reflect="1"/>
-
-    <xacro:mecanum_wheel
-      prefix="$(arg prefix)"
-      side="back_right"
-      x_reflect="-1"
-      y_reflect="-1"/>
+  <xacro:arg name="robot_name" default="robot_3d"/>
+  <xacro:arg name="prefix" default="robot1"/>
+  <xacro:arg name="use_gazebo" default="false"/>
+  <!-- ★ 추가: 시뮬레이터 백엔드 선택 (classic | gz) -->
+  <xacro:arg name="sim_backend" default="classic"/>
+  <!-- ★ 추가: 표현식에서 쓸 수 있도록 property로 바인딩 -->
+  <xacro:property name="sim_backend_sel" value="$(arg sim_backend)"/>
 
 
-    <xacro:rgbd_camera
-      prefix="$(arg prefix)"
-      camera_name="cam_1"
-      xyz_offset="0.105 0 0.03"
-      rpy_offset="0 0 0"/>
+  <!-- ========= 구성요소 include ========= -->
+  <xacro:include filename="$(find mec_mobile_description)/urdf/mech/robot_3d_base.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/mech/mecanum_wheel.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/rgbd_camera.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/lidar.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/imu.urdf.xacro"/>
 
-    <xacro:lidar_sensor
-      prefix="$(arg prefix)"
-      parent="base_link"
-      frame_id="laser_frame"
-      xyz_offset="0 0 0.0825"
-      rpy_offset="0 0 3.14"
-      mesh_xyz_offset="0 0 0"
-      mesh_rpy_offset="${-M_PI/2} 0 0"
-      topic_name="scan"/>
+  <!-- ========= 본체/휠/센서 인스턴스 ========= -->
+  <xacro:robot_3d_base prefix="$(arg prefix)"/>
 
-    <xacro:imu_sensor
-      prefix="$(arg prefix)"
-      parent="base_link"
-      frame_id="imu"
-      xyz_offset="0 0 0.006"
-      rpy_offset="0 0 0"
-      update_rate="15.0"
-      topic_name="imu/data"/>
-    <!-- 마찰/접촉(원하면 조정) -->
-    <gazebo reference="base_link">
-      <mu1>0.8</mu1>
-      <mu2>0.8</mu2>
-      <kp>1e6</kp>
-      <kd>1e3</kd>
-    </gazebo>
+  <xacro:mecanum_wheel
+    prefix="$(arg prefix)"
+    side="front_left"
+    x_reflect="1"
+    y_reflect="1"/>
 
-    <!-- ros2_control: Gazebo 가상 하드웨어 -->
-    <ros2_control name="GazeboSystem" type="system">
-      <hardware>
-        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
-      </hardware>
+  <xacro:mecanum_wheel
+    prefix="$(arg prefix)"
+    side="front_right"
+    x_reflect="1"
+    y_reflect="-1"/>
 
-      <!-- 4개의 메카넘 구동 조인트: 속도 제어 -->
-      <joint name="front_left_wheel_joint">
-        <command_interface name="velocity"/>
-        <state_interface name="velocity"/>
-        <state_interface name="position"/>
-      </joint>
-      <joint name="front_right_wheel_joint">
-        <command_interface name="velocity"/>
-        <state_interface name="velocity"/>
-        <state_interface name="position"/>
-      </joint>
-      <joint name="back_left_wheel_joint">
-        <command_interface name="velocity"/>
-        <state_interface name="velocity"/>
-        <state_interface name="position"/>
-      </joint>
-      <joint name="back_right_wheel_joint">
-        <command_interface name="velocity"/>
-        <state_interface name="velocity"/>
-        <state_interface name="position"/>
-      </joint>
-    </ros2_control>
+  <xacro:mecanum_wheel
+    prefix="$(arg prefix)"
+    side="back_left"
+    x_reflect="-1"
+    y_reflect="1"/>
 
-    <!-- Gazebo에서 ros2_control 구동 -->
+  <xacro:mecanum_wheel
+    prefix="$(arg prefix)"
+    side="back_right"
+    x_reflect="-1"
+    y_reflect="-1"/>
+
+  <xacro:rgbd_camera
+    prefix="$(arg prefix)"
+    camera_name="cam_1"
+    xyz_offset="0.105 0 0.03"
+    rpy_offset="0 0 0"/>
+
+  <xacro:lidar_sensor
+    prefix="$(arg prefix)"
+    parent="base_link"
+    frame_id="laser_frame"
+    xyz_offset="0 0 0.0825"
+    rpy_offset="0 0 3.14"
+    mesh_xyz_offset="0 0 0"
+    mesh_rpy_offset="${-M_PI/2} 0 0"
+    topic_name="scan"/>
+
+  <xacro:imu_sensor
+    prefix="$(arg prefix)"
+    parent="base_link"
+    frame_id="imu"
+    xyz_offset="0 0 0.006"
+    rpy_offset="0 0 0"
+    update_rate="15.0"
+    topic_name="imu/data"/>
+
+  <!-- ========= (선택) 물리/접촉 파라미터 ========= -->
+  <gazebo reference="base_link">
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
+    <kp>1e6</kp>
+    <kd>1e3</kd>
+  </gazebo>
+
+  <!-- ========= ros2_control (공용) =========
+       NOTE: 조인트 이름에 prefix 적용하여 URDF/컨트롤러 이름 일치 보장 -->
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <!-- 공용 하드웨어 선언 (Classic / Gazebo Sim 모두 OK) -->
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <!-- 4개의 메카넘 구동 조인트: 속도 제어 -->
+    <joint name="$(arg prefix)front_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="$(arg prefix)front_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="$(arg prefix)back_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="$(arg prefix)back_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+  </ros2_control>
+
+  <!-- ========= ros2_control 플러그인 로딩 (백엔드별 분기) ========= -->
+
+  <!-- ros2_control 플러그인 로딩: 백엔드 분기 -->
+  <!-- Classic(Gazebo Classic) -->
+  <xacro:if value="${sim_backend_sel == 'classic'}">
     <gazebo>
       <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so"/>
     </gazebo>
+  </xacro:if>
+
+  <!-- Gazebo Sim (Ignition/gz) -->
+  <xacro:if value="${sim_backend_sel == 'gz'}">
+    <gazebo>
+      <plugin name="gz_ros2_control" filename="gz_ros2_control-system"/>
+    </gazebo>
+  </xacro:if>
+
 </robot>

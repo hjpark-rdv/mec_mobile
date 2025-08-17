@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot_3d_gz">
+
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+  <xacro:arg name="controller_yaml_path" default=""/>
+
+  <xacro:include filename="$(find mec_mobile_description)/urdf/mech/robot_3d_base.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/mech/mecanum_wheel.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/rgbd_camera.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/lidar.urdf.xacro"/>
+  <xacro:include filename="$(find mec_mobile_description)/urdf/sensors/imu.urdf.xacro"/>
+
+  <xacro:robot_3d_base prefix=""/>
+  <xacro:mecanum_wheel prefix="" side="front_left"  x_reflect="1"  y_reflect="1"/>
+  <xacro:mecanum_wheel prefix="" side="front_right" x_reflect="1"  y_reflect="-1"/>
+  <xacro:mecanum_wheel prefix="" side="back_left"   x_reflect="-1" y_reflect="1"/>
+  <xacro:mecanum_wheel prefix="" side="back_right"  x_reflect="-1" y_reflect="-1"/>
+
+  <xacro:rgbd_camera
+    prefix=""
+    camera_name="cam_1"
+    xyz_offset="0.105 0 0.03"
+    rpy_offset="0 0 0"/>
+  <xacro:lidar_sensor
+    prefix=""
+    parent="base_link"
+    frame_id="laser_frame"
+    xyz_offset="0 0 0.0825"
+    rpy_offset="0 0 3.14"
+    mesh_xyz_offset="0 0 0"
+    mesh_rpy_offset="${-M_PI/2} 0 0"
+    topic_name="scan"/>
+  <xacro:imu_sensor
+    prefix=""
+    parent="base_link"
+    frame_id="imu"
+    xyz_offset="0 0 0.006"
+    rpy_offset="0 0 0"
+    update_rate="15.0"
+    topic_name="imu/data"/>
+
+  <gazebo reference="base_link">
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
+    <kp>1e6</kp>
+    <kd>1e3</kd>
+  </gazebo>
+
+  <ros2_control name="IgnitionSystem" type="ign_ros2_control/IgnitionSystem">
+    <joint name="front_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="front_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="back_left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="back_right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+      <parameters>$(arg controller_yaml_path)</parameters>
+    </plugin>
+  </gazebo>
+</robot>

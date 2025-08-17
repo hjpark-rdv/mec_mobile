@@ -13,6 +13,7 @@ find_package(ros2_control REQUIRED)
 find_package(ros2_controllers REQUIRED)
 find_package(robot_state_publisher REQUIRED)
 find_package(xacro REQUIRED)
+find_package(ros_gz_sim REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

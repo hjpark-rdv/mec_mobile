@@ -12,8 +12,8 @@ find_package(urdf_tutorial REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 # Copy necessary files to designated locations in the project
-install (
-  DIRECTORY meshes urdf
+install(
+  DIRECTORY urdf meshes
   DESTINATION share/${PROJECT_NAME}
 )
 
