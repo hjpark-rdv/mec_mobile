@@ -64,5 +64,45 @@
       rpy_offset="0 0 0"
       update_rate="15.0"
       topic_name="imu/data"/>
+    <!-- 마찰/접촉(원하면 조정) -->
+    <gazebo reference="base_link">
+      <mu1>0.8</mu1>
+      <mu2>0.8</mu2>
+      <kp>1e6</kp>
+      <kd>1e3</kd>
+    </gazebo>
 
+    <!-- ros2_control: Gazebo 가상 하드웨어 -->
+    <ros2_control name="GazeboSystem" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+
+      <!-- 4개의 메카넘 구동 조인트: 속도 제어 -->
+      <joint name="front_left_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+        <state_interface name="position"/>
+      </joint>
+      <joint name="front_right_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+        <state_interface name="position"/>
+      </joint>
+      <joint name="back_left_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+        <state_interface name="position"/>
+      </joint>
+      <joint name="back_right_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+        <state_interface name="position"/>
+      </joint>
+    </ros2_control>
+
+    <!-- Gazebo에서 ros2_control 구동 -->
+    <gazebo>
+      <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so"/>
+    </gazebo>
 </robot>
