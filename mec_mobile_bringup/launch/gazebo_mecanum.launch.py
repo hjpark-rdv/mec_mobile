@@ -65,35 +65,35 @@ def generate_launch_description():
     ])
 
     # 컨트롤러 스포너: JointStateBroadcaster → MecanumDriveController 순서로
-    spawner_jsb = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            'joint_state_broadcaster',
-            '--controller-manager', '/controller_manager',
-            '--param-file', controller_yaml
-        ],
-        output='screen'
-    )
+    # spawner_jsb = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=[
+    #         'joint_state_broadcaster',
+    #         '--controller-manager', '/controller_manager',
+    #         '--param-file', controller_yaml
+    #     ],
+    #     output='screen'
+    # )
 
-    spawner_mecanum = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            'mecanum_drive_controller',
-            '--controller-manager', '/controller_manager',
-            '--param-file', controller_yaml
-        ],
-        output='screen'
-    )
+    # spawner_mecanum = Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=[
+    #         'mecanum_drive_controller',
+    #         '--controller-manager', '/controller_manager',
+    #         '--param-file', controller_yaml
+    #     ],
+    #     output='screen'
+    # )
 
-    # JSB가 올라간 뒤 메카넘 컨트롤러를 시작하도록 순서 보장
-    chain_spawners = RegisterEventHandler(
-        OnProcessExit(
-            target_action=spawner_jsb,
-            on_exit=[spawner_mecanum]
-        )
-    )
+    # # JSB가 올라간 뒤 메카넘 컨트롤러를 시작하도록 순서 보장
+    # chain_spawners = RegisterEventHandler(
+    #     OnProcessExit(
+    #         target_action=spawner_jsb,
+    #         on_exit=[spawner_mecanum]
+    #     )
+    # )
 
     return LaunchDescription([
         model_arg,
@@ -101,6 +101,6 @@ def generate_launch_description():
         gazebo_launch,
         robot_state_publisher,
         spawn_entity,
-        spawner_jsb,
-        chain_spawners,
+        # spawner_jsb,
+        # chain_spawners,
     ])
