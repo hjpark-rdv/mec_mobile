@@ -46,7 +46,10 @@
     <kd>1e3</kd>
   </gazebo>
 
-  <ros2_control name="IgnitionSystem" type="ign_ros2_control/IgnitionSystem">
+  <ros2_control name="IgnitionSystem" type="system">
+    <hardware>
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
     <joint name="front_left_wheel_joint">
       <command_interface name="velocity"/>
       <state_interface name="velocity"/>
@@ -70,7 +73,7 @@
   </ros2_control>
 
   <gazebo>
-    <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+    <plugin filename="libign_ros2_control-system.so" name="ign_ros2_control::IgnitionROS2ControlPlugin">
       <parameters>$(arg controller_yaml_path)</parameters>
     </plugin>
   </gazebo>
