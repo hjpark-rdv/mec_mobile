@@ -11,6 +11,7 @@ def generate_launch_description():
     # ====== 패키지 경로 설정 ======
     pkg_mec_mobile_description = FindPackageShare('mec_mobile_description')
     pkg_mec_mobile_bringup = FindPackageShare('mec_mobile_bringup')
+    pkg_mec_mobile_gazebo = FindPackageShare('mec_mobile_gazebo')
 
     # ====== 인자 (Arguments) ======
     default_model_path = PathJoinSubstitution([
@@ -18,6 +19,10 @@ def generate_launch_description():
     ])
     default_controller_yaml_path = PathJoinSubstitution([
         pkg_mec_mobile_bringup, 'config', 'mecanum_controllers.yaml'
+    ])
+    # ✅ 추가: 기본 world 파일 경로 설정
+    default_world_path = PathJoinSubstitution([
+        pkg_mec_mobile_gazebo, 'worlds', 'myfarm.world'
     ])
 
     model_arg = DeclareLaunchArgument('model', default_value=default_model_path)
@@ -27,6 +32,9 @@ def generate_launch_description():
     controller_yaml_arg = DeclareLaunchArgument(
         'controller_yaml_path', default_value=default_controller_yaml_path
     )
+    # ✅ 추가: world 파일 인자 선언
+    world_arg = DeclareLaunchArgument('world', default_value=default_world_path)
+
 
     # ====== Gazebo Sim 실행 ======
     # ✅ 수정: Gazebo에 불필요한 '--ros-args'를 전달하지 않음
@@ -36,7 +44,7 @@ def generate_launch_description():
                 FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'
             ])
         ]),
-        launch_arguments={'gz_args': '-r -v 4 --render-engine ogre'}.items() # Gazebo 자체 옵션만 전달
+        launch_arguments={'gz_args': ['-r -v 4 --render-engine ogre ', LaunchConfiguration('world')]}.items() # Gazebo 자체 옵션만 전달
     )
 
     # ====== Robot Description 생성 ======
@@ -93,6 +101,7 @@ def generate_launch_description():
         gui_arg,
         entity_arg,
         controller_yaml_arg,
+        world_arg,
         gz_sim_launch,
         robot_state_publisher_node,
         TimerAction(period=5.0, actions=[spawn_entity_node]),

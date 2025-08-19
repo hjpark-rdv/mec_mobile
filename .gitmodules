@@ -1,0 +1,3 @@
+[submodule "mec_mobile_gazebo/gazebo_models"]
+	path = mec_mobile_gazebo/gazebo_models
+	url = https://github.com/osrf/gazebo_models
