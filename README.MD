@@ -31,3 +31,13 @@ Use the main branch as the start package for Gazebo simulation
     ros2 launch urdf_tutorial display.launch.py model:=/home/robotlabs/ros2_ws/src/mec_mobile/mec_mobile_description/urdf/robots/robot_3d.urdf.xacro
     ```
     Note: update the model's path according to your own setting.
+
+## GAZEBO SIM 
+
+* gazebo sim, run
+    ```ros2 launch mec_mobile_bringup gazebo_mecanum_gz.launch.py
+    ```
+
+* gazebo sim, simple test
+    ```ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=True --remap cmd_vel:=/mecanum_drive_controller/reference
+    ```
