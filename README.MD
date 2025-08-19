@@ -35,9 +35,11 @@ Use the main branch as the start package for Gazebo simulation
 ## GAZEBO SIM 
 
 * gazebo sim, run
-    ```ros2 launch mec_mobile_bringup gazebo_mecanum_gz.launch.py
+    ```bash
+    ros2 launch mec_mobile_bringup gazebo_mecanum_gz.launch.py
     ```
 
 * gazebo sim, simple test
-    ```ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=True --remap cmd_vel:=/mecanum_drive_controller/reference
+    ```bash
+    ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=True --remap cmd_vel:=/mecanum_drive_controller/reference
     ```
