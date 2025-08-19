@@ -24,6 +24,10 @@ def generate_launch_description():
     default_world_path = PathJoinSubstitution([
         pkg_mec_mobile_gazebo, 'worlds', 'myfarm.world'
     ])
+    # ✅ RViz 추가: 기본 RViz 설정 파일 경로
+    default_rviz_config_path = PathJoinSubstitution([
+        pkg_mec_mobile_bringup, 'rviz', 'mecanum_gazebo.rviz'
+    ])
 
     model_arg = DeclareLaunchArgument('model', default_value=default_model_path)
     use_sim_time_arg = DeclareLaunchArgument('use_sim_time', default_value='true')
@@ -34,7 +38,12 @@ def generate_launch_description():
     )
     # ✅ 추가: world 파일 인자 선언
     world_arg = DeclareLaunchArgument('world', default_value=default_world_path)
-
+    # ✅ RViz 추가: RViz 설정 파일 인자 선언
+    rviz_arg = DeclareLaunchArgument(
+        name='rvizconfig',
+        default_value=default_rviz_config_path,
+        description='Absolute path to RViz config file'
+    )
 
     # ====== Gazebo Sim 실행 ======
     # ✅ 수정: Gazebo에 불필요한 '--ros-args'를 전달하지 않음
@@ -94,6 +103,16 @@ def generate_launch_description():
         output='screen'
     )
 
+    # ✅ RViz 추가: RViz 노드 정의
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', LaunchConfiguration('rvizconfig')],
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+    )
+
     # ====== LaunchDescription 반환 ======
     return LaunchDescription([
         model_arg,
@@ -102,8 +121,10 @@ def generate_launch_description():
         entity_arg,
         controller_yaml_arg,
         world_arg,
+        rviz_arg,
         gz_sim_launch,
         robot_state_publisher_node,
+        rviz_node,
         TimerAction(period=5.0, actions=[spawn_entity_node]),
         TimerAction(period=8.0, actions=[spawner_jsb]),
         TimerAction(period=9.0, actions=[spawner_mecanum]),
