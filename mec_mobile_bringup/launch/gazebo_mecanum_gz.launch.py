@@ -44,7 +44,7 @@ def generate_launch_description():
                 FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'
             ])
         ]),
-        launch_arguments={'gz_args': ['-r -v 4 --render-engine ogre ', LaunchConfiguration('world')]}.items() # Gazebo 자체 옵션만 전달
+        launch_arguments={'gz_args': ['-r -v 4 --render-engine ogre2 ', LaunchConfiguration('world')]}.items() # Gazebo 자체 옵션만 전달
     )
 
     # ====== Robot Description 생성 ======
