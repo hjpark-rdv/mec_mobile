@@ -111,21 +111,37 @@
     </joint>
   </ros2_control>
 
+  <gazebo>
+    <plugin name="object_controller" filename="libgazebo_ros_planar_move.so">
+      <ros>
+        <remapping>odom:=odom/unfiltered</remapping>
+      </ros>
+      <command_topic>cmd_vel</command_topic>
+      <odometry_topic>odom/unfiltered</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
+      <odometry_rate>20.0</odometry_rate>
+      <robot_base_frame>base_footprint</robot_base_frame>
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>false</publish_odom_tf>
+    </plugin>
+  </gazebo>
+
   <!-- ========= ros2_control 플러그인 로딩 (백엔드별 분기) ========= -->
 
   <!-- ros2_control 플러그인 로딩: 백엔드 분기 -->
   <!-- Classic(Gazebo Classic) -->
-  <xacro:if value="${sim_backend_sel == 'classic'}">
-    <gazebo>
-      <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so"/>
-    </gazebo>
-  </xacro:if>
+  <!-- <xacro:if value="${sim_backend_sel == 'classic'}"> -->
+  <!-- <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so"/>
+      <parameters>$(find mec_mobile_bringup)/config/mecanum_controllers.yaml</parameters>
+  </gazebo> -->
+  <!-- </xacro:if> -->
 
   <!-- Gazebo Sim (Ignition/gz) -->
-  <xacro:if value="${sim_backend_sel == 'gz'}">
+  <!-- <xacro:if value="${sim_backend_sel == 'gz'}">
     <gazebo>
       <plugin name="gz_ros2_control" filename="gz_ros2_control-system"/>
     </gazebo>
-  </xacro:if>
+  </xacro:if> -->
 
 </robot>
