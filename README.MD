@@ -22,7 +22,7 @@ Use the main branch as the start package for Gazebo simulation
 * Compile the package
     ```bash
     cd ~/ros2_ws
-    sudo apt-get install ros-${ROS_DISTRO}-urdf-tutorial
+    sudo apt-get install ros-${ROS_DISTRO}-urdf-tutorial ros-humble-controller-manager
     colcon build
     ```
 * Try it
@@ -34,6 +34,11 @@ Use the main branch as the start package for Gazebo simulation
 
 ## GAZEBO SIM 
 
+* compile package
+   ```bash
+   rosdep install -i --from-path src --rosdistro humble
+   ```
+
 * gazebo sim, run
     ```bash
     ros2 launch mec_mobile_bringup gazebo_mecanum_gz.launch.py
@@ -42,4 +47,14 @@ Use the main branch as the start package for Gazebo simulation
 * gazebo sim, simple test
     ```bash
     ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=True --remap cmd_vel:=/mecanum_drive_controller/reference
+    ```
+
+* (WSL with OGRE2 에러 날때)
+    ```bash
+    add-apt-repository ppa:kisak/turtle \
+    && apt-get update \
+    && apt-get upgrade -y 
+    #mesa driver ver25로 업그레이드 이후 아래 export 수행
+    export GALLIUM_DRIVER=d3d12
+    export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
     ```

@@ -4,7 +4,7 @@
   <xacro:property name="wheel_radius" value="0.0325" />
   <xacro:property name="wheel_separation" value="0.169" />
   <xacro:property name="wheel_width" value="0.03040" />
-  <xacro:property name="wheel_mass" value="9.1" />
+  <xacro:property name="wheel_mass" value="0.2" />
   <xacro:property name="wheel_xoff" value="0.08" />
   <xacro:property name="wheel_yoff" value="-0.01" />
 
@@ -48,10 +48,18 @@
       <surface>
         <friction>
           <ode>
-              <mu>1.0</mu>
-              <mu2>0.0</mu2>
+            <mu>1.0</mu>
+            <mu2>0.1</mu2>
+            <slip1>0.0</slip1>
+            <slip2>1.0</slip2>
           </ode>
         </friction>
+        <contact>
+          <ode>
+            <kp>100000.0</kp>
+            <kd>100.0</kd>
+          </ode>
+        </contact>
       </surface>
       <visual>
           <material>
