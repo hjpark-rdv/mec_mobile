@@ -15,10 +15,10 @@ def generate_launch_description():
 
     # ====== 인자 (Arguments) ======
     default_model_path = PathJoinSubstitution([
-        pkg_mec_mobile_description, 'urdf', 'robots', 'robot_3d_gz.urdf.xacro'
+        pkg_mec_mobile_description, 'urdf', 'robots', 'robot_lift_gz.urdf.xacro'
     ])
     default_controller_yaml_path = PathJoinSubstitution([
-        pkg_mec_mobile_bringup, 'config', 'mecanum_controllers.yaml'
+        pkg_mec_mobile_bringup, 'config', 'lift_robot_controllers.yaml'
     ])
     # ✅ 추가: 기본 world 파일 경로 설정
     default_world_path = PathJoinSubstitution([

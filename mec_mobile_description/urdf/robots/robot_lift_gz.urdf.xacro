@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<robot name="mecanum_lift" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:arg name="controller_yaml_path" default=""/>
+
+    <link name="chassis">
+        <inertial>
+            <mass value="1.14395"/>
+            <inertia ixx="0.126164" ixy="0" ixz="0" iyy="0.416519" iyz="0" izz="0.481014"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 -0.084" rpy="1.57 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find mec_mobile_description)/meshes/robot_lift/MecanumLift.dae" scale="0.6 0.6 0.6"/>
+            </geometry>
+            </visual>
+        <collision>
+            <origin xyz="-0.03 -0.132 0.708" rpy="0 0 0"/>
+            <geometry>
+                <box size="2.04 0.936 0.6"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.042 0.294 1.98" rpy="0 1.57 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="1.8"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.042 0.294 1.578" rpy="0 1.57 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="1.8"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.042 -0.558 1.578" rpy="0 1.57 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="1.8"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.042 -0.558 1.98" rpy="0 1.57 0"/>
+            <geometry>
+                <cylinder radius="0.03" length="1.8"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <xacro:macro name="wheel" params="prefix reflect parent_link x y z">
+        <link name="${prefix}_wheel">
+            <inertial>
+                <mass value="2"/>
+                <inertia ixx="0.145833" ixy="0" ixz="0" iyy="0.145833" iyz="0" izz="0.125"/>
+            </inertial>
+            <visual>
+                <geometry>
+                    <mesh filename="file://$(find mec_mobile_description)/meshes/robot_lift/mecanum_wheel_${reflect}.STL" scale="0.0036 0.0036 0.0036"/>
+                </geometry>
+            </visual>
+            <collision>
+                <geometry>
+                    <sphere radius="0.18"/>
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${prefix}_wheel_joint" type="revolute">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/>
+            <limit effort="100.0" velocity="10.0" lower="-1e16" upper="1e16"/>
+            </joint>
+    </xacro:macro>
+
+    <xacro:wheel prefix="front_left" reflect="left" parent_link="chassis" x="0.858" y="0.282" z="0.186"/>
+    <xacro:wheel prefix="front_right" reflect="right" parent_link="chassis" x="0.858" y="-0.552" z="0.186"/>
+    <xacro:wheel prefix="rear_left" reflect="right" parent_link="chassis" x="-0.93" y="0.282" z="0.186"/>
+    <xacro:wheel prefix="rear_right" reflect="left" parent_link="chassis" x="-0.93" y="-0.552" z="0.186"/>
+
+    <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </hardware>
+        
+        <joint name="front_left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="front_right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="rear_left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="rear_right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control>
+
+    <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(arg controller_yaml_path)</parameters>
+      <!-- <parameters>$(find gz_ros2_control_demos)/config/mecanum_drive_controller.yaml</parameters> -->
+      <ros>
+        <remapping>/mecanum_drive_controller/reference:=/cmd_vel</remapping>
+        <remapping>/mecanum_drive_controller/odom:=/odom</remapping>
+      </ros>
+    </plugin>
+  </gazebo>
+
+</robot>
